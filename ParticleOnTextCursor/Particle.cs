@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace ParticleOnTextCursor
 {
+    /// <summary>
+    /// ddd
+    /// </summary>
     class Particle
     {
         public int x;
@@ -54,7 +57,7 @@ namespace ParticleOnTextCursor
             {
                 if (property.PropertyType == typeof(Color))
                 {
-                    allColors.Add((Color)property.GetValue(null));
+                    allColors.Add(Color.FromName(property.Name));
                 }
             }
             return allColors;
@@ -77,11 +80,15 @@ namespace ParticleOnTextCursor
             return colors;
         }
 
-
+        private int _density = 50;   //密度
+        private Point _range = new Point(100,1000);  //范围
+        /// <summary>
+        /// ddd
+        /// </summary>
         public ParticleEmitter()
         {
-            //availableColors = GetAllColors();
-            availableColors = GetParticleColors();
+            availableColors = GetAllColors();
+            //availableColors = GetParticleColors();
         }
 
         public Color SelectColor()
@@ -99,15 +106,13 @@ namespace ParticleOnTextCursor
 
         public Point SelectVelocity()
         {
-            float minVelocity = 500;
-            float maxVelocity = 890;
-            float velocity = random.Next((int)minVelocity, (int)maxVelocity);
+            float velocity = random.Next(_range.X, _range.Y);
 
             int minAngle = 0;
-            int maxAngle = 30;
+            int maxAngle = 180;
             int angle = random.Next(minAngle, maxAngle);
 
-            double vy = - Math.Cos((Math.PI / 180) * angle) * velocity;
+            double vy = -Math.Cos((Math.PI / 180) * angle) * velocity;
             double vx = Math.Sin((Math.PI / 180) * angle) * velocity;
 
             int sign = random.Next(100) > 50 ? 1 : -1;
@@ -118,7 +123,7 @@ namespace ParticleOnTextCursor
         public void Emit(int x, int y)
         {
             Color color = SelectColor();
-            for(int i = 0; i < 5; ++i)
+            for (int i = 0; i < _density; ++i)
             {
                 EmitSingleParticle(x, y, color);
             }
@@ -137,7 +142,7 @@ namespace ParticleOnTextCursor
         public void Update(int ms)
         {
             float gravity = 10.0f;
-            for(int i = 0; i < particles.Count; ++i)
+            for (int i = 0; i < particles.Count; ++i)
             {
                 Particle p = particles[i];
                 p.life -= ms;

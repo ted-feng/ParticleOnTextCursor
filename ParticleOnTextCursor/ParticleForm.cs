@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ParticleOnTextCursor
 {
@@ -22,6 +23,7 @@ namespace ParticleOnTextCursor
         public ParticleForm()
         {
             InitializeComponent();
+
             // http://stackoverflow.com/questions/4387680/transparent-background-on-winforms
             // Transparent background on winforms?
             this.BackColor = Color.LimeGreen;
@@ -49,7 +51,7 @@ namespace ParticleOnTextCursor
 #endif
         }
 
-        #region Data Members & Structures 
+        #region Data Members & Structures
 
         [StructLayout(LayoutKind.Sequential)]    // Required by user32.dll
         public struct RECT
@@ -78,9 +80,9 @@ namespace ParticleOnTextCursor
         Point caretPosition;                     // To store Caret Position  
         String prevActiveProcess = "";
 
-#endregion
+        #endregion
 
-#region winform always on top
+        #region winform always on top
 
         // http://www.c-sharpcorner.com/UploadFile/kirtan007/make-form-stay-always-on-top-of-every-window/
         static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
@@ -99,10 +101,10 @@ namespace ParticleOnTextCursor
         {
             SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
-#endregion
+        #endregion
 
 
-#region DllImports 
+        #region DllImports
 
 
         /*- Retrieves Title Information of the specified window -*/
@@ -126,25 +128,26 @@ namespace ParticleOnTextCursor
         public static extern bool ClientToScreen(IntPtr hWnd, out Point position);
 
 
-#endregion
+        #endregion
 
-#region Particle
+        #region Particle
         private ParticleEmitter emitter = new ParticleEmitter();
 
         private int tickCount = 0;
         private void RenderParticle(Graphics g)
         {
-            int size = 4;
+            int size = 5;
             List<Color> colors = emitter.AvailableColors;
-            foreach(Color c in colors)
+            foreach (Color c in colors)
             {
                 var allParticles = emitter.Particles;
                 var particles = allParticles.FindAll(p => p.color == c);
 
                 Brush brush = new SolidBrush(c);
-                foreach(Particle p in particles)
+                foreach (Particle p in particles)
                 {
-                    g.FillRectangle(brush, p.x, p.y, size, size);
+                    //g.FillRectangle(brush, p.x, p.y, size, size);
+                    g.FillEllipse(brush, p.x, p.y, size, size);
                 }
             }
 
@@ -157,10 +160,10 @@ namespace ParticleOnTextCursor
 #endif
         }
 
-#endregion
+        #endregion
 
 
-#region Event Handlers 
+        #region Event Handlers
         protected override void OnPaint(PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -217,9 +220,9 @@ namespace ParticleOnTextCursor
             // 창이 바뀌는 경우는 파티클 효과 무시하려고
             prevActiveProcess = activeProcess;
         }
-#endregion
+        #endregion
 
-#region Methods 
+        #region Methods
 
         private bool IsParticleRequired(String prevActiveProcess, String currActiveProcess, Point prevCaretPosition, Point currCaretPosition)
         {
@@ -325,6 +328,6 @@ namespace ParticleOnTextCursor
             return String.Empty;
         }
 
-#endregion
+        #endregion
     }
 }
